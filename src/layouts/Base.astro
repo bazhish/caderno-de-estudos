@@ -5,11 +5,10 @@ import { u } from '../lib/url';
 
 interface Props {
   title: string;
-  active?: 'hub' | 'enem' | 'escolar' | 'ds' | 'salas' | null;
+  active?: 'hub' | 'enem' | 'escolar' | 'ds' | null;
   description?: string;
 }
-const { title, active = null, description = 'Central de conteúdo da turma' } = Astro.props;
-const user = Astro.locals.user;
+const { title, active = null, description = 'Aulas organizadas para estudar no seu ritmo' } = Astro.props;
 
 // A borda da folha segue a cor da aba ativa (o hub usa o mesmo "preto" da aba Início).
 const accentByTab: Record<string, string> = {
@@ -17,7 +16,6 @@ const accentByTab: Record<string, string> = {
   enem: 'var(--color-enem)',
   escolar: 'var(--color-escolar)',
   ds: 'var(--color-ds)',
-  salas: 'var(--color-salas)',
 };
 const borderColor = active ? accentByTab[active] : 'var(--color-line)';
 ---
@@ -28,16 +26,16 @@ const borderColor = active ? accentByTab[active] : 'var(--color-line)';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <title>{title} · Caderno da Turma</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>{title} · Caderno de Estudos</title>
+    <link rel="icon" type="image/svg+xml" href={u('/favicon.svg')} />
+    <link rel="icon" href={u('/favicon.ico')} sizes="32x32" />
+    <link rel="apple-touch-icon" href={u('/apple-touch-icon.png')} />
     <meta name="theme-color" content="#1f2a44" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Caderno da Turma" />
-    <meta property="og:title" content={`${title} · Caderno da Turma`} />
+    <meta property="og:site_name" content="Caderno de Estudos" />
+    <meta property="og:title" content={`${title} · Caderno de Estudos`} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="/icon-512.png" />
+    <meta property="og:image" content={u('/icon-512.png')} />
     <meta name="twitter:card" content="summary" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -66,32 +64,10 @@ const borderColor = active ? accentByTab[active] : 'var(--color-line)';
             <button type="button" class="hist-btn" onclick="history.forward()" aria-label="Avançar">→</button>
           </div>
           <a href={u('/')} class="font-display font-bold text-base sm:text-lg md:text-xl text-black no-underline">
-            Caderno da Turma<span style="color: var(--color-enem)">.</span>
+            Caderno de Estudos<span style="color: var(--color-enem)">.</span>
           </a>
         </div>
-        {user ? (
-          <details class="user-menu relative" id="menu-usuario">
-            <summary class="user-chip" aria-label={`Menu de @${user.username}`}>
-              <span class="user-avatar" aria-hidden="true">{user.username.charAt(0).toUpperCase() || '?'}</span>
-              <span class="font-mono text-xs text-ink hidden sm:inline">@{user.username}</span>
-              {(user.role === 'adm' || user.role === 'coordenador' || user.role === 'professor') && (
-                <span class="user-badge">{user.role === 'adm' ? 'ADM' : user.role === 'coordenador' ? 'COORD' : 'PROF'}</span>
-              )}
-              <span class="text-ink-soft text-[10px]" aria-hidden="true">▾</span>
-            </summary>
-            <div class="user-panel">
-              {(user.role === 'adm' || user.role === 'coordenador') && (
-                <a href="/admin" class="user-item">🛠️ <span>Painel de gestão</span></a>
-              )}
-              <a href="/configuracoes" class="user-item">⚙️ <span>Configurações</span></a>
-              <form method="POST" action="/api/auth/logout" class="m-0">
-                <button type="submit" class="user-item user-item-sair w-full">↪ <span>Sair da conta</span></button>
-              </form>
-            </div>
-          </details>
-        ) : (
-          <span class="font-mono text-xs text-ink-soft hidden md:inline">Feito por alunos, para alunos</span>
-        )}
+        <span class="font-mono text-xs text-ink-soft hidden md:inline">Aulas abertas para estudar no seu ritmo</span>
       </div>
       <div class="max-w-5xl mx-auto w-full mt-5 sm:mt-6">
         <TabNav active={active} />
@@ -111,7 +87,7 @@ const borderColor = active ? accentByTab[active] : 'var(--color-line)';
       <p class="font-mono text-xs text-ink-soft">
         Consulte sempre um professor em caso de dúvidas.
       </p>
-      <p class="font-mono text-xs text-ink-soft">Feito por alunos, para alunos 📓</p>
+      <p class="font-mono text-xs text-ink-soft">Caderno de Estudos</p>
     </footer>
 
     <style>
@@ -133,80 +109,6 @@ const borderColor = active ? accentByTab[active] : 'var(--color-line)';
         background: var(--color-paper-dark);
         color: var(--color-ink);
       }
-
-      /* Menu do usuário: um chip arrumado que abre um cartão com as ações. */
-      .user-menu > summary {
-        list-style: none;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        border: 1px solid var(--color-line);
-        background: color-mix(in srgb, var(--color-paper) 88%, white);
-        border-radius: 9999px;
-        padding: 0.3rem 0.7rem 0.3rem 0.3rem;
-        transition: border-color 0.15s, background-color 0.15s;
-      }
-      .user-menu > summary::-webkit-details-marker { display: none; }
-      .user-menu > summary:hover,
-      .user-menu[open] > summary {
-        border-color: var(--color-ink-soft);
-        background: var(--color-paper-dark);
-      }
-      .user-avatar {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 1.7rem;
-        height: 1.7rem;
-        border-radius: 9999px;
-        background: var(--color-ink);
-        color: var(--color-paper);
-        font-family: var(--font-display);
-        font-weight: 700;
-        font-size: 0.8rem;
-      }
-      .user-badge {
-        font-family: var(--font-mono);
-        font-size: 9px;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        border-radius: 9999px;
-        padding: 0.1rem 0.45rem;
-        background: var(--color-enem-soft);
-        color: var(--color-enem);
-      }
-      .user-panel {
-        position: absolute;
-        right: 0;
-        top: calc(100% + 0.5rem);
-        min-width: 12.5rem;
-        z-index: 60;
-        display: flex;
-        flex-direction: column;
-        padding: 0.4rem;
-        border: 1.5px solid var(--color-line);
-        border-radius: 0.6rem;
-        background: color-mix(in srgb, var(--color-paper) 92%, white);
-        box-shadow: 0 12px 28px rgba(31, 42, 68, 0.14);
-      }
-      .user-item {
-        display: flex;
-        align-items: center;
-        gap: 0.55rem;
-        padding: 0.55rem 0.7rem;
-        border-radius: 0.45rem;
-        font-family: var(--font-body);
-        font-size: 0.85rem;
-        color: var(--color-ink);
-        text-decoration: none;
-        text-align: left;
-        background: none;
-        border: none;
-        cursor: pointer;
-      }
-      .user-item:hover { background: var(--color-paper-dark); }
-      .user-item-sair { color: var(--color-enem); }
 
       /* Folha estilo fichário: borda na cor da aba ativa e furos perfurados na
          margem esquerda. z-index 5 deixa a folha na frente das abas inativas
@@ -243,10 +145,6 @@ const borderColor = active ? accentByTab[active] : 'var(--color-line)';
       document.addEventListener('click', (e) => {
         const target = e.target;
         if (!(target instanceof Element)) return;
-
-        // fecha o menu do usuário ao clicar fora dele
-        const menu = document.getElementById('menu-usuario') as HTMLDetailsElement | null;
-        if (menu?.open && !menu.contains(target)) menu.open = false;
 
         const trigger = target.closest('[data-help-target]');
         if (trigger) {

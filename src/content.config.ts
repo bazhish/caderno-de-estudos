@@ -1,14 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-const questionSchema = z.object({
-  question: z.string(),
-  options: z.array(z.string()).length(5),
-  correctIndex: z.number().min(0).max(4),
-  explanation: z.string(),
-  source: z.string().optional(), // ex: "ENEM 2022 - Questão 136 (fictícia)"
-});
-
 // Bloco opcional de recursos extras de uma aula (vídeo aula, curso gratuito,
 // materiais adicionais, conteúdo complementar). Cada seção é independente —
 // só renderiza no site se estiver preenchida no frontmatter.
@@ -44,13 +36,6 @@ const resourcesSchema = z.object({
     .optional(),
 });
 
-// Atividade prática (curso técnico): roteiro em texto livre/markdown que
-// ensina a colocar a teoria em prática — sem correção automática, sem gabarito.
-const atividadeSchema = z.object({
-  titulo: z.string(),
-  roteiro: z.string(),
-});
-
 // Schema compartilhado pelas 3 coleções (enem, escolar, ds).
 const lessonSchema = z.object({
   title: z.string(),
@@ -59,8 +44,6 @@ const lessonSchema = z.object({
   quickSummary: z.string().optional(), // resumo rápido de 2-4 linhas, direto ao ponto
   order: z.number().default(1),
   resources: resourcesSchema.optional(),
-  questions: z.array(questionSchema).length(5),
-  atividades: z.array(atividadeSchema).optional(), // usado nas aulas de curso (DS)
 });
 
 // ENEM: matéria -> tema (sem bimestre/semana)

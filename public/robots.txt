@@ -1,4 +1,3 @@
-# Caderno da Turma é um site fechado por login — não há conteúdo público
-# para indexar. Pedimos aos rastreadores que não indexem nenhuma rota.
+# Caderno de Estudos é uma biblioteca pública de aulas estáticas.
 User-agent: *
-Disallow: /
+Allow: /

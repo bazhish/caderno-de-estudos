@@ -1,18 +1,16 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
-import vercel from '@astrojs/vercel';
 
-// Modo servidor (SSR): login e permissões são checados por requisição no
-// middleware. Deploy na Vercel (serverless). https://astro.build/config
+// Site estático: as aulas são publicadas no repositório como arquivos MDX.
+// BASE_PATH é definido pelo workflow do GitHub Pages (ex.: /proverbios).
 export default defineConfig({
-  output: 'server',
-  adapter: vercel(),
+  output: 'static',
+  base: process.env.BASE_PATH || '/',
 
-  integrations: [react(), mdx()],
+  integrations: [mdx()],
 
   vite: {
     plugins: [tailwindcss()]

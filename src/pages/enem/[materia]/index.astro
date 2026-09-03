@@ -1,11 +1,17 @@
 ---
 import Base from '../../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
 import { splitSlug } from '../../../lib/slug';
 import { u } from '../../../lib/url';
 import { listarEntradas } from '../../../lib/lessonsRepo';
 
+export async function getStaticPaths() {
+  const aulas = await getCollection('enem');
+  return [...new Set(aulas.map((aula) => splitSlug(aula.id)[0]))].map((materia) => ({ params: { materia } }));
+}
+
 const { materia } = Astro.params;
-const entries = await listarEntradas(Astro, 'enem');
+const entries = await listarEntradas('enem');
 const temas = entries
   .filter((e) => splitSlug(e.id)[0] === materia)
   .sort((a, b) => a.data.order - b.data.order);
@@ -29,7 +35,7 @@ const subjectLabel = temas[0]?.data.subject ?? materia;
           class="flex items-center justify-between gap-4 rounded-md border border-paper-dark px-5 py-4 hover:border-enem transition-colors bg-white/50"
         >
           <span class="font-body text-ink font-medium">{t.data.title}</span>
-          <span class="font-mono text-xs text-ink-soft shrink-0">5 questões →</span>
+          <span class="font-mono text-xs text-ink-soft shrink-0">Abrir aula →</span>
         </a>
       </li>
     ))}
